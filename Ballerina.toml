@@ -1,0 +1,18 @@
+[package]
+org = "thambaru"
+name = "notifylk_integration"
+version = "0.1.0"
+distribution = "2201.13.1"
+
+[build-options]
+observabilityIncluded = true
+
+[[dependency]]
+org = "ballerina"
+name = "http"
+version = "2.13.2"
+
+[[dependency]]
+org = "ballerina"
+name = "url"
+version = "2.5.1"
