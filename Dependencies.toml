@@ -266,9 +266,6 @@ dependencies = [
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jballerina.java"}
 ]
-modules = [
-	{org = "ballerina", packageName = "os", moduleName = "os"}
-]
 
 [[package]]
 org = "ballerina"
@@ -339,11 +336,10 @@ modules = [
 [[package]]
 org = "thambaru"
 name = "notifylk_integration"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
 	{org = "ballerina", name = "http"},
 	{org = "ballerina", name = "io"},
-	{org = "ballerina", name = "os"},
 	{org = "ballerina", name = "test"},
 	{org = "ballerina", name = "url"},
 	{org = "ballerinai", name = "observe"}
