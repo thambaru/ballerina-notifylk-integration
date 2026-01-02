@@ -1,0 +1,10 @@
+# Notify.lk Configuration Example
+# Copy this file to Config.toml and add your actual credentials
+
+# Your Notify.lk User ID
+NOTIFY_USER_ID = "your_user_id_here"
+
+# Your Notify.lk API Key
+NOTIFY_API_KEY = "your_api_key_here"
+
+# Note: Add Config.toml to your .gitignore file to keep credentials secure

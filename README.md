@@ -258,24 +258,49 @@ public function main() {
 
 ## Configuration
 
-### Environment Variables
+### Configuration Management
 
-For production use, store your credentials as environment variables:
+For production use, store your credentials securely using Ballerina's configuration system. Create a `Config.toml` file in your project root:
 
-```bash
-export NOTIFY_USER_ID="your_user_id"
-export NOTIFY_API_KEY="your_api_key"
+```toml
+# Config.toml
+NOTIFY_USER_ID = "your_user_id"
+NOTIFY_API_KEY = "your_api_key"
 ```
 
+Then declare configurable variables in your Ballerina code:
+
 ```ballerina
-import ballerina/os;
+configurable string NOTIFY_USER_ID = ?;
+configurable string NOTIFY_API_KEY = ?;
+
+// Use the configurable variables
+NotifyLKConfig config = {
+    userId: NOTIFY_USER_ID,
+    apiKey: NOTIFY_API_KEY
+};
+```
+
+**Security Benefits:**
+- Credentials are not stored in shell history
+- Config files can be excluded from version control (add `Config.toml` to `.gitignore`)
+- Values are only accessible to your Ballerina application
+- Supports different configurations for different environments
+
+**Quick Setup:**
+1. Copy `Config.toml.example` to `Config.toml`
+2. Replace placeholder values with your actual credentials
+3. The `Config.toml` file is already excluded from version control
+
+```ballerina
 import thambaru/notifylk_integration as notify;
 
+// Configurable variables - values come from Config.toml
+configurable string NOTIFY_USER_ID = ?;
+configurable string NOTIFY_API_KEY = ?;
+
 public function main() returns error? {
-    string userId = os:getEnv("NOTIFY_USER_ID");
-    string apiKey = os:getEnv("NOTIFY_API_KEY");
-    
-    notify:NotifyClient client = check notify:createClient(userId, apiKey);
+    notify:NotifyClient client = check notify:createClient(NOTIFY_USER_ID, NOTIFY_API_KEY);
     // Use client...
 }
 ```

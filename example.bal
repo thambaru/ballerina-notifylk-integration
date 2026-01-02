@@ -1,23 +1,12 @@
 import ballerina/io;
-import ballerina/os;
+
+// Configurable variables - values come from Config.toml
+configurable string NOTIFY_USER_ID = ?;
+configurable string NOTIFY_API_KEY = ?;
 
 public function main() returns error? {
-    // Get credentials from environment variables or use default test values
-    string userId = os:getEnv("NOTIFY_USER_ID");
-    string apiKey = os:getEnv("NOTIFY_API_KEY");
-    
-    // Use default values if environment variables are not set
-    if userId == "" {
-        userId = "test_user_id";
-        io:println("Using default test user ID. Set NOTIFY_USER_ID environment variable for actual testing.");
-    }
-    if apiKey == "" {
-        apiKey = "test_api_key";
-        io:println("Using default test API key. Set NOTIFY_API_KEY environment variable for actual testing.");
-    }
-    
-    // Create Notify.lk client
-    NotifyClient|error clientResult = createClient(userId, apiKey);
+    // Create Notify.lk client using configurable variables
+    NotifyClient|error clientResult = createClient(NOTIFY_USER_ID, NOTIFY_API_KEY);
     
     if clientResult is error {
         io:println("Failed to create client: " + clientResult.message());
@@ -116,6 +105,6 @@ public function main() returns error? {
     }
     
     io:println("\n=== Examples completed! ===");
-    io:println("Note: With test credentials, API calls will fail but validation works correctly.");
-    io:println("Set NOTIFY_USER_ID and NOTIFY_API_KEY environment variables for real testing.");
+    io:println("Note: Configure your credentials in Config.toml file for real testing.");
+    io:println("Add NOTIFY_USER_ID and NOTIFY_API_KEY to Config.toml with your actual values.");
 }

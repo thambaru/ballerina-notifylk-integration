@@ -1,22 +1,13 @@
 import ballerina/io;
-import ballerina/os;
 import thambaru/notifylk_integration as notify;
 
+// Configurable variables - values come from Config.toml
+configurable string NOTIFY_USER_ID = ?;
+configurable string NOTIFY_API_KEY = ?;
+
 public function main() returns error? {
-    // Get credentials from environment variables or use your actual credentials
-    string userId = os:getEnv("NOTIFY_USER_ID");
-    string apiKey = os:getEnv("NOTIFY_API_KEY");
-    
-    // Use default values if environment variables are not set
-    if userId == "" {
-        userId = "your_user_id_here";
-    }
-    if apiKey == "" {
-        apiKey = "your_api_key_here";
-    }
-    
-    // Create Notify.lk client
-    notify:NotifyClient client = check notify:createClient(userId, apiKey);
+    // Create Notify.lk client using configurable variables
+    notify:NotifyClient client = check notify:createClient(NOTIFY_USER_ID, NOTIFY_API_KEY);
     
     // Example 1: Send simple SMS
     io:println("=== Sending Simple SMS ===");

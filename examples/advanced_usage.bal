@@ -1,6 +1,9 @@
 import ballerina/io;
-import ballerina/os;
 import thambaru/notifylk_integration as notify;
+
+// Configurable variables - values come from Config.toml
+configurable string NOTIFY_USER_ID = ?;
+configurable string NOTIFY_API_KEY = ?;
 
 // Bulk SMS recipient information
 type Recipient record {|
@@ -11,19 +14,8 @@ type Recipient record {|
 |};
 
 public function main() returns error? {
-    // Initialize client
-    string userId = os:getEnv("NOTIFY_USER_ID");
-    string apiKey = os:getEnv("NOTIFY_API_KEY");
-    
-    // Use default values if environment variables are not set
-    if userId == "" {
-        userId = "your_user_id_here";
-    }
-    if apiKey == "" {
-        apiKey = "your_api_key_here";
-    }
-    
-    notify:NotifyClient client = check notify:createClient(userId, apiKey);
+    // Create Notify.lk client using configurable variables
+    notify:NotifyClient notifyClient = check notify:createClient(NOTIFY_USER_ID, NOTIFY_API_KEY);
     
     // Example 1: Bulk SMS sending
     io:println("=== Bulk SMS Example ===");
@@ -43,7 +35,7 @@ public function main() returns error? {
             email: recipient.email
         };
         
-        notify:SmsResponse|error result = client.sendSms(
+        notify:SmsResponse|error result = notifyClient.sendSms(
             to = recipient.phoneNumber,
             message = personalizedMessage,
             senderId = "NotifyDEMO",
@@ -68,7 +60,7 @@ public function main() returns error? {
     notify:SmsResponse? finalResult = ();
     
     while retryCount < maxRetries && finalResult is () {
-        notify:SmsResponse|error result = client.sendSms(
+        notify:SmsResponse|error result = notifyClient.sendSms(
             to = "9471234567",
             message = "Important notification - please confirm receipt.",
             senderId = "NotifyDEMO"
@@ -95,10 +87,11 @@ public function main() returns error? {
     // Example 3: Account balance monitoring
     io:println("\n=== Account Balance Monitoring ===");
     
-    notify:AccountStatusResponse|error statusResult = client.getAccountStatus();
+    notify:AccountStatusResponse|error statusResult = notifyClient.getAccountStatus();
     
     if statusResult is notify:AccountStatusResponse && statusResult.data is notify:AccountStatusData {
-        decimal balance = statusResult.data.accBalance;
+        notify:AccountStatusData accountData = <notify:AccountStatusData>statusResult.data;
+        decimal balance = accountData.accBalance;
         decimal lowBalanceThreshold = 100.0;
         
         io:println(string `Current balance: ${balance}`);
@@ -107,7 +100,7 @@ public function main() returns error? {
             io:println("⚠️  Warning: Account balance is low!");
             
             // Send low balance notification to admin
-            notify:SmsResponse|error alertResult = client.sendSms(
+            notify:SmsResponse|error alertResult = notifyClient.sendSms(
                 to = "9471234567", // Admin phone number
                 message = string `Alert: Notify.lk account balance is low (${balance}). Please top up.`,
                 senderId = "NotifyDEMO"
@@ -124,18 +117,10 @@ public function main() returns error? {
     // Example 4: Message template system
     io:println("\n=== Message Template System ===");
     
-    map<string> templates = {
-        "welcome": "Welcome {name}! Your account has been created successfully.",
-        "otp": "Your OTP code is {code}. Valid for 5 minutes.",
-        "reminder": "Hi {name}, you have a pending appointment on {date}.",
-        "promotion": "Special offer for {name}! Get 20% off your next purchase."
-    };
-    
     // Send welcome message using template
-    string welcomeTemplate = templates["welcome"] ?: "";
-    string welcomeMessage = welcomeTemplate.replace("{name}", "Alice");
+    string welcomeMessage = "Welcome Alice! Your account has been created successfully.";
     
-    notify:SmsResponse|error templateResult = client.sendSms(
+    notify:SmsResponse|error templateResult = notifyClient.sendSms(
         to = "9471234567",
         message = welcomeMessage,
         senderId = "NotifyDEMO",
@@ -160,7 +145,7 @@ public function main() returns error? {
     foreach string lang in unicodeMessages.keys() {
         string message = unicodeMessages[lang] ?: "";
         
-        notify:SmsResponse|error unicodeResult = client.sendSms(
+        notify:SmsResponse|error unicodeResult = notifyClient.sendSms(
             to = "9471234567",
             message = message,
             senderId = "NotifyDEMO",
